@@ -1,10 +1,13 @@
-import React, { useEffect, useState } from "react";
+import React, { useContext, useEffect, useState } from "react";
 import SpeechBubble from "../../components/SpeechBubble";
+import MsgTeste from "../../components/MsgTeste";
+import MessageContext from "../../contexts/messages";
 import "./styles.css";
 
 const Chat = () => {
+	const ctx = useContext(MessageContext);
+
 	const [inputMsg, setInputMsg] = useState("");
-	const [mensagens, setMensagens] = useState([]);
 	const [mensagemAtual, setMensagemAtual] = useState();
 
 	const arrayBot = [
@@ -27,7 +30,7 @@ const Chat = () => {
 	];
 
 	useEffect(() => {
-		if (mensagens.length === 1) {
+		if (ctx.mensagens.length === 1) {
 			const newMsg = {
 				mensagem: arrayBot[0].text,
 				send: false,
@@ -36,11 +39,12 @@ const Chat = () => {
 			};
 
 			setTimeout(() => {
-				setMensagens((mensagens) => [...mensagens, newMsg]);
+				ctx.setMensagens((mensagens) => [...mensagens, newMsg]);
 				setMensagemAtual(1);
 			}, 3000);
 		}
-	}, [mensagens]);
+		// eslint-disable-next-line react-hooks/exhaustive-deps
+	}, [ctx.mensagens]);
 
 	/**
 	 *
@@ -57,12 +61,12 @@ const Chat = () => {
 			date: "18/05/2022 21:00",
 			read: false,
 		};
-		setMensagens((mensagens) => [...mensagens, newMsg]);
+		ctx.setMensagens((mensagens) => [...mensagens, newMsg]);
 		setInputMsg("");
 
 		switch (mensagemAtual) {
 			case 1:
-				if (msg == 1 || msg == 2) {
+				if (msg === 1 || msg === 2) {
 					const newReceivedMsg = {
 						mensagem: arrayBot[1].text,
 						send: false,
@@ -70,7 +74,7 @@ const Chat = () => {
 						read: false,
 					};
 					setTimeout(() => {
-						setMensagens((mensagens) => [
+						ctx.setMensagens((mensagens) => [
 							...mensagens,
 							newReceivedMsg,
 						]);
@@ -84,7 +88,7 @@ const Chat = () => {
 						read: false,
 					};
 					setTimeout(() => {
-						setMensagens([...mensagens, newReceivedMsg]);
+						ctx.setMensagens((msg) => [...msg, newReceivedMsg]);
 						setMensagemAtual(2);
 					}, 3000);
 				}
@@ -99,14 +103,15 @@ const Chat = () => {
 		<div className="main">
 			<div className="chat">
 				<h1>Chat</h1>
+				<MsgTeste />
 				<div className="messages">
-					{mensagens.map((item) => (
+					{ctx.mensagens.map((item) => (
 						<SpeechBubble chat={item} />
 					))}
 				</div>
 				<div className="footer">
 					<span className="material-symbols-outlined icon">mood</span>
-					<span class="material-symbols-outlined icon">
+					<span className="material-symbols-outlined icon">
 						attach_file
 					</span>
 					<input
